@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration><Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration><Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{75A382BF-22B8-486D-83FF-01061BCA2B2B}</ProjectGuid>
+    <RootNamespace>fastpad</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries Condition="'$(Configuration)'=='Debug'">true</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ItemGroup>
+    <ClCompile Include="document.cpp" />
+    <ClCompile Include="encoding.cpp" />
+    <ClCompile Include="line_index.cpp" />
+    <ClCompile Include="mmap_file.cpp" />
+    <ClCompile Include="piece_table.cpp" />
+    <ClCompile Include="save.cpp" />
+    <ClCompile Include="search.cpp" />
+    <ClInclude Include="document.h" />
+    <ClInclude Include="encoding.h" />
+    <ClInclude Include="line_index.h" />
+    <ClInclude Include="mmap_file.h" />
+    <ClInclude Include="piece_table.h" />
+    <ClInclude Include="save.h" />
+    <ClInclude Include="search.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

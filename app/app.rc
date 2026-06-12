@@ -1,0 +1,38 @@
+#include "resource.h"
+#include <windows.h>
+
+// Application icon (PNG-packed ICO: 16/32/48/256; generated, see README).
+IDI_APP ICON "app.ico"
+
+// Embedded editor font; loaded by Renderer via DirectWrite's in-memory font
+// loader (IDWriteFactory5). Path is relative to this .rc file's directory.
+IDR_FONT_MAIN RCDATA "fonts\\MesloLGSDZNerdFont-Regular.ttf"
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION    0,3,0,0
+ PRODUCTVERSION 0,3,0,0
+ FILEFLAGSMASK  VS_FFI_FILEFLAGSMASK
+ FILEFLAGS      0
+ FILEOS         VOS_NT_WINDOWS32
+ FILETYPE       VFT_APP
+ FILESUBTYPE    VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"   // US English, Unicode
+        BEGIN
+            VALUE "CompanyName",      "Boris Kudriashov"
+            VALUE "FileDescription",  "FastPad - any-size text editor"
+            VALUE "FileVersion",      "0.3.0.0"
+            VALUE "InternalName",     "FastPad"
+            VALUE "LegalCopyright",   "Boris Kudriashov"
+            VALUE "OriginalFilename", "app.exe"
+            VALUE "ProductName",      "FastPad"
+            VALUE "ProductVersion",   "0.3.0.0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
