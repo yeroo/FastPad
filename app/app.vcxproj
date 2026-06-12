@@ -42,6 +42,7 @@
     <ClInclude Include="renderer.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="settings.h" />
+    <ClInclude Include="ui_font.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc" />

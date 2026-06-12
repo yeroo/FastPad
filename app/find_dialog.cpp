@@ -1,4 +1,5 @@
 #include "app/find_dialog.h"
+#include "app/ui_font.h"
 #include <string>
 
 namespace fastpad {
@@ -55,6 +56,7 @@ static LRESULT CALLBACK findProc(HWND h, UINT m, WPARAM wp, LPARAM lp) {
         CreateWindowExW(0, L"BUTTON", L"Cancel",
             WS_CHILD | WS_VISIBLE,
             206, 64, 74, 24, h, (HMENU)(INT_PTR)IDCANCEL, nullptr, nullptr);
+        apply_ui_font(h);
         SetFocus(st->edit);
         // Move caret to end of pre-filled text
         SendMessageW(st->edit, EM_SETSEL, (WPARAM)-1, (LPARAM)-1);

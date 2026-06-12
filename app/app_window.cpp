@@ -454,7 +454,7 @@ void AppWindow::doFind(bool forward) {
 
     if (!hit.has_value()) {
         std::wstring msg = L"Cannot find \"" + findNeedle_ + L"\"";
-        MessageBoxW(hwnd_, msg.c_str(), L"FastPad", MB_ICONINFORMATION);
+        showStatusMessage(msg.c_str());
         return;
     }
 
@@ -518,6 +518,17 @@ void AppWindow::setStatusPart(int part, const wchar_t* text) {
     if (statusText_[part] == text) return;
     statusText_[part] = text;
     SendMessageW(status_, SB_SETTEXTW, (WPARAM)part, (LPARAM)text);
+}
+
+// Flash a one-line note across the whole status bar (e.g. "Cannot find ..."),
+// in place of an interrupting info message box. The status bar's simple mode
+// overlays the normal parts; a one-shot 5 s timer restores them. Re-arming the
+// timer keeps the latest message visible for a fresh 5 s.
+void AppWindow::showStatusMessage(const wchar_t* text) {
+    if (!status_) return;
+    SendMessageW(status_, SB_SIMPLE, TRUE, 0);
+    SendMessageW(status_, SB_SETTEXTW, SB_SIMPLEID, (LPARAM)text);
+    SetTimer(hwnd_, kTransientTimer, 5000, nullptr);
 }
 
 void AppWindow::updateTitleDirty() {
@@ -592,8 +603,7 @@ bool AppWindow::copySelection() {
     const uint64_t sb = renderer_->selBegin();
     const uint64_t len = renderer_->selEnd() - sb;
     if (len > kMaxClipboardBytes) {
-        MessageBoxW(hwnd_, L"Selection is larger than 256 MB - too large for the clipboard.\nUse Save As for data that size.",
-                    L"FastPad", MB_ICONINFORMATION);
+        showStatusMessage(L"Selection is larger than 256 MB - too large for the clipboard; use Save As for data that size.");
         return false;
     }
     std::wstring text;
@@ -782,6 +792,12 @@ LRESULT AppWindow::handle(UINT m, WPARAM wp, LPARAM lp) {
             updateStatusBar();
             return 0;
         }
+        if (wp == kTransientTimer) {   // showStatusMessage elapsed: restore parts
+            KillTimer(hwnd_, kTransientTimer);
+            SendMessageW(status_, SB_SIMPLE, FALSE, 0);
+            updateStatusBar();
+            return 0;
+        }
         // id 1: indexing progress timer
         updateStatusBar();
         if (doc_ && doc_->indexComplete() && indexTimer_) { KillTimer(hwnd_, indexTimer_); indexTimer_ = 0; }
@@ -813,7 +829,7 @@ LRESULT AppWindow::handle(UINT m, WPARAM wp, LPARAM lp) {
         auto switchEncoding = [this](const EncodingInfo& e) {
             if (!doc_) return;
             if (!doc_->setEncoding(e)) {
-                MessageBoxW(hwnd_, L"Save or undo changes before switching encoding.", L"FastPad", MB_ICONINFORMATION);
+                showStatusMessage(L"Save or undo changes before switching encoding.");
                 return;
             }
             if (renderer_) renderer_->setDocument(doc_.get());   // resets layout cache too
@@ -865,18 +881,14 @@ LRESULT AppWindow::handle(UINT m, WPARAM wp, LPARAM lp) {
         else if (id == IDM_REGISTER) {
             std::wstring err;
             if (register_open_with(&err))
-                MessageBoxW(hwnd_,
-                    L"FastPad now appears in Open With for text files.\n\n"
-                    L"To make it the DEFAULT, pick it once in Settings > Default apps "
-                    L"(Windows requires the user to do this).",
-                    L"FastPad", MB_ICONINFORMATION);
+                showStatusMessage(L"FastPad added to Open With for text files - pick it in Settings > Default apps to make it the default.");
             else
                 MessageBoxW(hwnd_, (L"Registration failed:\n" + err).c_str(), L"FastPad", MB_ICONERROR);
         }
         else if (id == IDM_UNREGISTER) {
             std::wstring err;
             if (unregister_open_with(&err))
-                MessageBoxW(hwnd_, L"FastPad removed from Open With.", L"FastPad", MB_ICONINFORMATION);
+                showStatusMessage(L"FastPad removed from Open With.");
             else
                 MessageBoxW(hwnd_, (L"Unregister failed:\n" + err).c_str(), L"FastPad", MB_ICONERROR);
         }
@@ -902,11 +914,11 @@ LRESULT AppWindow::handle(UINT m, WPARAM wp, LPARAM lp) {
             if (show_goto_dialog(hwnd_, &v, &isLine)) {
                 if (isLine) {
                     if (doc_->dirty()) {
-                        MessageBoxW(hwnd_, L"Line navigation uses the saved file's lines until you save - use :offset for exact positions in an edited file.", L"FastPad", MB_ICONINFORMATION);
+                        showStatusMessage(L"Line navigation uses the saved file's lines until you save - use :offset for exact positions in an edited file.");
                     } else {
                         uint64_t line = (v == 0) ? 0 : v - 1;
                         if (line < doc_->lineCount() && doc_->lineStart(line) <= doc_->indexedBytes()) renderer_->goToLine(line);
-                        else MessageBoxW(hwnd_, L"That line is not indexed yet - try again in a moment, or use :offset.", L"FastPad", MB_ICONINFORMATION);
+                        else showStatusMessage(L"That line is not indexed yet - try again in a moment, or use :offset.");
                     }
                 } else renderer_->goToOffset(v);
                 updateStatusBar();

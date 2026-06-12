@@ -37,6 +37,7 @@ private:
     void updateStatusBar();
     void scheduleStatusUpdate();               // coalescing 80 ms one-shot timer (id 3)
     void setStatusPart(int part, const wchar_t* text);   // SB_SETTEXT only on change
+    void showStatusMessage(const wchar_t* text);  // transient status note, auto-clears after 5 s
     void updateTitleDirty();
     void layout();
 
@@ -58,6 +59,7 @@ private:
     std::unique_ptr<Document> doc_;
     std::unique_ptr<Renderer> renderer_;
     static constexpr UINT_PTR kStatusTimer = 3; // one-shot debounce for scroll-driven status updates
+    static constexpr UINT_PTR kTransientTimer = 4; // one-shot 5 s auto-clear for showStatusMessage
     UINT_PTR indexTimer_ = 0;
     std::wstring titleBase_;                 // window title without the dirty '*'
     std::wstring statusText_[4];             // last text sent per status part (flicker guard)

@@ -1,4 +1,5 @@
 #include "app/goto_dialog.h"
+#include "app/ui_font.h"
 #include <string>
 
 namespace fastpad {
@@ -32,6 +33,7 @@ static LRESULT CALLBACK gotoProc(HWND h, UINT m, WPARAM wp, LPARAM lp) {
             115, 62, 70, 24, h, (HMENU)IDOK, nullptr, nullptr);
         CreateWindowExW(0, L"BUTTON", L"Cancel", WS_CHILD | WS_VISIBLE,
             195, 62, 70, 24, h, (HMENU)IDCANCEL, nullptr, nullptr);
+        apply_ui_font(h);
         SetFocus(st->edit);
         return 0;
     }
