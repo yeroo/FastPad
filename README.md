@@ -5,7 +5,7 @@ M1 viewer, M2 editor, and M3 polish are complete (see `docs/superpowers/specs`).
 
 Design goals: classic-notepad simplicity, zero bloat, any encoding.
 
-Current version: **0.3.1.0** (versioned exe with app icon).
+Current version: **0.3.2.0** (versioned exe with app icon).
 
 ---
 
