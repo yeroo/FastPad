@@ -11,12 +11,20 @@ Current version: **0.3.0.0** (versioned exe with app icon).
 
 ## Build
 
-Prerequisites: Visual Studio 2022, MSBuild on PATH (or invoke directly).
+Prerequisites: Visual Studio 2022 (any edition — Community, Professional, or
+Enterprise) with the **Desktop development with C++** workload, which provides
+the v143 toolset and the Windows SDK.
+
+Locate MSBuild for whichever edition is installed via `vswhere`, then build —
+this works regardless of edition or install path:
 
 ```powershell
+$vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+$msbuild = & $vswhere -latest -requires Microsoft.Component.MSBuild `
+    -find MSBuild\**\Bin\MSBuild.exe | Select-Object -First 1
+
 $env:MSBUILDDISABLENODEREUSE="1"
-& "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\MSBuild\Current\Bin\MSBuild.exe" `
-    FastPad.sln /p:Configuration=Release /p:Platform=x64 /m
+& $msbuild FastPad.sln /p:Configuration=Release /p:Platform=x64 /m
 ```
 
 Run tests (59 cases):
