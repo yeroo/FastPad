@@ -8,6 +8,14 @@ namespace fastpad {
 // the dialog can return the direction without a custom id.)
 static constexpr int IDC_FINDPREV = IDRETRY;   // 4
 
+// Control IDs for the EDIT and checkbox. These MUST stay clear of the button
+// command IDs (IDOK=1, IDCANCEL=2, IDRETRY=4): an EDIT sends EN_SETFOCUS /
+// EN_CHANGE notifications to its parent as WM_COMMAND, and WM_COMMAND dispatch
+// keys only on LOWORD (the control id). If the edit's id were IDOK, focusing
+// it would look like "Find Next" and close the dialog instantly.
+static constexpr int IDC_FIND_EDIT = 1000;
+static constexpr int IDC_FIND_CASE = 1001;
+
 struct FindState {
     FindResult result{};
     bool done = false;
@@ -28,11 +36,11 @@ static LRESULT CALLBACK findProc(HWND h, UINT m, WPARAM wp, LPARAM lp) {
         st->edit = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT",
             st->result.needle.c_str(),
             WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL,
-            54, 8, 226, 22, h, (HMENU)(INT_PTR)1, nullptr, nullptr);
+            54, 8, 226, 22, h, (HMENU)(INT_PTR)IDC_FIND_EDIT, nullptr, nullptr);
         // Match case checkbox
         st->chkCase = CreateWindowExW(0, L"BUTTON", L"Match &case",
             WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX,
-            10, 38, 120, 18, h, (HMENU)(INT_PTR)2, nullptr, nullptr);
+            10, 38, 120, 18, h, (HMENU)(INT_PTR)IDC_FIND_CASE, nullptr, nullptr);
         SendMessageW(st->chkCase, BM_SETCHECK,
             st->result.matchCase ? BST_CHECKED : BST_UNCHECKED, 0);
         // Find Next button (default)

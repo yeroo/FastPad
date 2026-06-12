@@ -3,6 +3,13 @@
 
 namespace fastpad {
 
+// Control ID for the EDIT. Must stay clear of the button command IDs
+// (IDOK=1, IDCANCEL=2): an EDIT sends EN_SETFOCUS / EN_CHANGE notifications to
+// its parent as WM_COMMAND, and dispatch keys only on LOWORD (the control id).
+// If the edit's id were IDOK, focusing it would look like "Go" and close the
+// dialog instantly.
+static constexpr int IDC_GOTO_EDIT = 1000;
+
 struct GotoState {
     uint64_t value = 0;
     bool isLine = true;
@@ -20,7 +27,7 @@ static LRESULT CALLBACK gotoProc(HWND h, UINT m, WPARAM wp, LPARAM lp) {
         CreateWindowExW(0, L"STATIC", L"Line number, or :byte-offset", WS_CHILD | WS_VISIBLE,
             10, 10, 260, 18, h, nullptr, nullptr, nullptr);
         st->edit = CreateWindowExW(WS_EX_CLIENTEDGE, L"EDIT", L"", WS_CHILD | WS_VISIBLE | ES_AUTOHSCROLL,
-            10, 32, 260, 22, h, (HMENU)1, nullptr, nullptr);
+            10, 32, 260, 22, h, (HMENU)(INT_PTR)IDC_GOTO_EDIT, nullptr, nullptr);
         CreateWindowExW(0, L"BUTTON", L"Go", WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
             115, 62, 70, 24, h, (HMENU)IDOK, nullptr, nullptr);
         CreateWindowExW(0, L"BUTTON", L"Cancel", WS_CHILD | WS_VISIBLE,
